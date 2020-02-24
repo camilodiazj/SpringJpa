@@ -4,8 +4,11 @@ import com.spring.jpa.spring.boot.jpa.models.entity.Cliente;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TransactionRequiredException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +25,8 @@ public class ClienteDaoImpl implements IClienteDao {
     }
 
     @Override
-    public void save(Cliente cliente) {
-        entityManager.persist(cliente);
+    @Transactional
+    public void save(Cliente cliente)  {
+            entityManager.persist(cliente);
     }
 }
