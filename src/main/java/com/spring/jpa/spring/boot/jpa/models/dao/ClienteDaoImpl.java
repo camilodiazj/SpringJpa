@@ -4,13 +4,11 @@ import com.spring.jpa.spring.boot.jpa.models.entity.Cliente;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TransactionRequiredException;
-
 import java.util.List;
-import java.util.Optional;
+
 
 @Repository
 public class ClienteDaoImpl implements IClienteDao {
@@ -26,7 +24,37 @@ public class ClienteDaoImpl implements IClienteDao {
 
     @Override
     @Transactional
-    public void save(Cliente cliente)  {
+    public void save(Cliente cliente) {
+        if (cliente.getId() != null && cliente.getId() > 0) {
+            entityManager.merge(cliente);
+        } else {
             entityManager.persist(cliente);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Cliente findOne(Long id) throws IllegalArgumentException {
+        try {
+            return entityManager.find(Cliente.class, id);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getCause());
+            return null;
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id) throws IllegalArgumentException, TransactionRequiredException {
+        try {
+            entityManager.remove(findOne(id));
+        } catch (IllegalArgumentException e){
+            System.out.println("CAUSA 1: ".concat(e.getMessage()));
+        } catch (TransactionRequiredException e){
+            System.out.println("CAUSA 2: ".concat(e.getMessage()));
+        } catch (Exception e){
+            System.out.println("CAUSA 3: ".concat(e.getMessage()));
+        }
     }
 }
