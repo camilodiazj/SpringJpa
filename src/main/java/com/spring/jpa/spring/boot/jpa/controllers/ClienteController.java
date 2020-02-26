@@ -2,6 +2,7 @@ package com.spring.jpa.spring.boot.jpa.controllers;
 
 import com.spring.jpa.spring.boot.jpa.models.dao.IClienteDao;
 import com.spring.jpa.spring.boot.jpa.models.entity.Cliente;
+import com.spring.jpa.spring.boot.jpa.models.service.IClienteService;
 import org.hibernate.validator.constraints.ParameterScriptAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,11 +18,11 @@ import java.util.List;
 public class ClienteController {
 
     @Autowired
-    private IClienteDao iClienteDao;
+    private IClienteService iClienteService;
 
     @GetMapping("/listar")
     public ResponseEntity<List<Cliente>> listar() {
-        return new ResponseEntity<>(iClienteDao.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(iClienteService.findAll(), HttpStatus.OK);
     }
 
     @PostMapping("/form")
@@ -29,7 +30,7 @@ public class ClienteController {
         if(result.hasErrors()){
             return new ResponseEntity<>(result.getFieldErrors(), HttpStatus.BAD_REQUEST);
         }else {
-            iClienteDao.save(cliente);
+            iClienteService.save(cliente);
             return new ResponseEntity<>("Cliente añadido", HttpStatus.OK);
         }
     }
@@ -37,8 +38,8 @@ public class ClienteController {
     @PutMapping("/form/{id}")
     public ResponseEntity<?> editar(@RequestBody @Valid Cliente client, BindingResult result, @PathVariable Long id){
         if(id>0){
-            if(iClienteDao.findOne(id)!=null && !result.hasErrors()){
-                iClienteDao.save(client);
+            if(iClienteService.findOne(id)!=null && !result.hasErrors()){
+                iClienteService.save(client);
                 return new ResponseEntity<>(client, HttpStatus.CREATED);
             }else if(result.hasErrors()){
                 return new ResponseEntity<>(result.getAllErrors(), HttpStatus.BAD_REQUEST);
@@ -55,7 +56,7 @@ public class ClienteController {
     public ResponseEntity<?> eliminar(@PathVariable Long id) throws IllegalArgumentException {
         try {
             if (id > 0) {
-                iClienteDao.delete((long) 3);
+                iClienteService.delete((long) 3);
                 return new ResponseEntity<>("Deleted", HttpStatus.OK);
             }
         } catch (Exception e) {
